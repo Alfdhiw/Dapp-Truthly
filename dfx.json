@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "dapp-truthly-backend": {
+      "main": "src/dapp-truthly-backend/main.mo",
+      "type": "motoko"
+    },
+    "dapp-truthly-frontend": {
+      "dependencies": [
+        "dapp-truthly-backend"
+      ],
+      "source": [
+        "src/dapp-truthly-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "dapp-truthly-frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
