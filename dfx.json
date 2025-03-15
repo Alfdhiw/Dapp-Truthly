@@ -4,6 +4,17 @@
       "main": "src/dapp-truthly-backend/main.mo",
       "type": "motoko"
     },
+    "llm": {
+      "candid": "https://github.com/dfinity/llm/releases/latest/download/llm-canister-ollama.did",
+      "type": "custom",
+      "specified_id": "bkyz2-fmaaa-aaaaa-qaaaq-cai",
+      "remote": {
+        "id": {
+          "ic": "bkyz2-fmaaa-aaaaa-qaaaq-cai"
+        }
+      },
+      "wasm": "https://github.com/dfinity/llm/releases/latest/download/llm-canister-ollama.wasm"
+    },
     "dapp-truthly-frontend": {
       "dependencies": [
         "dapp-truthly-backend"
@@ -18,7 +29,7 @@
   "defaults": {
     "build": {
       "args": "",
-      "packtool": ""
+      "packtool": "mops sources"
     }
   },
   "output_env_file": ".env",

@@ -1,32 +1,26 @@
-import Nat "mo:base/Nat";
+import Debug "mo:base/Debug";
 import Text "mo:base/Text";
-import Array "mo:base/Array";
-import AIHelper "ai_helper"
+import LlmCanister "canister:llm";
 
-actor NewsVerifier {
-  // Data berita terverifikasi (judul, hasil, confidence %)
-  var news_db : [(Text, Text, Nat)] = [];
+actor HoaxVerifier {
 
-  // Fungsi untuk memverifikasi berita menggunakan AI sederhana
-  public shared func verifyNews(title : Text, content : Text) : async (Text, Nat) {
-    let (result, confidence) = AIHelper.analyze(content);
-   news_db := Array.append([(title, result, confidence)], news_db); // Menambahkan berita ke database
-    return (result, confidence);
-  };
+  type chat_message = { content : Text; role : { #user } };
+  type chat_request = { messages : [chat_message]; model : Text };
 
-  // Fungsi untuk mengambil daftar berita yang telah diverifikasi
-  public query func getVerifiedNews() : async [(Text, Text, Nat)] {
-    return news_db;
-  };
+  public shared func checkNews(newsText : Text) : async Text {
+    if (Text.size(newsText) < 10) {
+      return "Input berita terlalu pendek untuk dianalisis.";
+    };
 
-  // Sistem penyimpanan stable agar data tidak hilang setelah upgrade
-  stable var stable_news_db : [(Text, Text, Nat)] = [];
+    let prompt : Text = "Saya memiliki berita berikut:\n\n" # newsText # "\n\n" #
+    "Tolong analisis berita ini dan tentukan apakah ini hoax atau fakta berdasarkan sumber terpercaya.";
 
-  system func preupgrade() {
-    stable_news_db := news_db; // Simpan data sebelum upgrade
-  };
+    let request : chat_request = {
+      messages = [{ content = prompt; role = #user }];
+      model = "llama3.1:8b";
+    };
 
-  system func postupgrade() {
-    news_db := stable_news_db; // Pulihkan data setelah upgrade
+    let result = await LlmCanister.v0_chat(request);
+    return result;
   };
 };
